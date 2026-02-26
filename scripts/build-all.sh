@@ -95,6 +95,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --scheme)
       SCHEME="${2:-}"
+      if [[ "${SCHEME}" == "roothide" ]]; then
+        echo "[build-all] Scheme 'roothide' detected -> using Theos rootless packaging"
+        SCHEME="rootless"
+      fi
       if [[ "${SCHEME}" != "rootless" && "${SCHEME}" != "rootful" ]]; then
         echo "Invalid --scheme value: ${SCHEME}" >&2
         exit 1

@@ -8,6 +8,7 @@ IPHONE_HOST=""
 IPHONE_USER="root"
 IPHONE_PORT="22"
 SCHEME="rootless"
+SCHEME_INPUT="rootless"
 CONFIG_PATH="${REPO_DIR}/proxyd-c/example-config.json"
 SKIP_TWEAK=0
 SKIP_DAEMON=0
@@ -23,7 +24,7 @@ Options:
   --host <ip/hostname>       iPhone host (required)
   --user <username>          SSH user (default: root)
   --port <ssh_port>          SSH port (default: 22)
-  --scheme <rootless|rootful>
+  --scheme <roothide|rootless|rootful>
                              Jailbreak package scheme (default: rootless)
   --config <path>            Config JSON to upload (default: proxyd-c/example-config.json)
   --skip-tweak               Do not install tweak .deb
@@ -48,7 +49,11 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --scheme)
-      SCHEME="${2:-}"
+      SCHEME_INPUT="${2:-}"
+      SCHEME="${SCHEME_INPUT}"
+      if [[ "${SCHEME}" == "roothide" ]]; then
+        SCHEME="rootless"
+      fi
       if [[ "${SCHEME}" != "rootless" && "${SCHEME}" != "rootful" ]]; then
         echo "Invalid scheme: ${SCHEME}" >&2
         exit 1
@@ -117,7 +122,7 @@ if [[ "${SKIP_TWEAK}" -eq 0 ]]; then
 fi
 
 echo "[deploy] Target: ${SSH_TARGET}:${IPHONE_PORT}"
-echo "[deploy] Scheme: ${SCHEME}"
+echo "[deploy] Scheme: ${SCHEME_INPUT} (effective: ${SCHEME})"
 echo "[deploy] Config:  ${CONFIG_PATH}"
 if [[ -n "${DAEMON_DEB}" ]]; then echo "[deploy] Daemon package: ${DAEMON_DEB}"; fi
 if [[ -n "${TWEAK_DEB}" ]]; then echo "[deploy] Tweak package:  ${TWEAK_DEB}"; fi
@@ -143,9 +148,18 @@ mkdir -p /var/mobile/Library/Preferences
 install -m 0644 '${REMOTE_TMP}/com.project.lumina.proxyd.json' '${REMOTE_CONFIG}'
 chown mobile:mobile '${REMOTE_CONFIG}' || true
 
+DPKG_BIN=\$(command -v dpkg || true)
+APT_BIN=\$(command -v apt-get || true)
+if [ -x /var/jb/usr/bin/dpkg ]; then DPKG_BIN=/var/jb/usr/bin/dpkg; fi
+if [ -x /var/jb/usr/bin/apt-get ]; then APT_BIN=/var/jb/usr/bin/apt-get; fi
+
 if ls '${REMOTE_TMP}'/*.deb >/dev/null 2>&1; then
-  dpkg -i '${REMOTE_TMP}'/*.deb || apt-get -f install -y || true
-  dpkg -i '${REMOTE_TMP}'/*.deb || true
+  if [ -z "\${DPKG_BIN}" ]; then
+    echo "dpkg not found on device" >&2
+    exit 1
+  fi
+  "\${DPKG_BIN}" -i '${REMOTE_TMP}'/*.deb || { [ -n "\${APT_BIN}" ] && "\${APT_BIN}" -f install -y; } || true
+  "\${DPKG_BIN}" -i '${REMOTE_TMP}'/*.deb || true
 fi
 
 if [ -f '${PLIST_PATH}' ]; then
@@ -160,11 +174,11 @@ echo "[deploy] Installing packages and restarting daemon..."
 
 if [[ "${SKIP_TWEAK}" -eq 0 && "${SKIP_SBRELOAD}" -eq 0 ]]; then
   echo "[deploy] Reloading SpringBoard (sbreload)..."
-  "${SSH_BASE[@]}" "sbreload >/dev/null 2>&1 || killall -9 SpringBoard >/dev/null 2>&1 || true"
+  "${SSH_BASE[@]}" "if [ -x /var/jb/usr/bin/sbreload ]; then /var/jb/usr/bin/sbreload >/dev/null 2>&1; elif command -v sbreload >/dev/null 2>&1; then sbreload >/dev/null 2>&1; else killall -9 SpringBoard >/dev/null 2>&1 || true; fi"
 fi
 
 echo ""
 echo "[deploy] Done."
 echo "[deploy] Next (run from WSL):"
-echo "  ./scripts/logs-iphone.sh --host ${IPHONE_HOST} --all --scheme ${SCHEME}"
+echo "  ./scripts/logs-iphone.sh --host ${IPHONE_HOST} --all --scheme ${SCHEME_INPUT}"
 echo "[deploy] Then open Minecraft and join a Bedrock server."

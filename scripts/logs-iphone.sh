@@ -5,6 +5,7 @@ IPHONE_HOST=""
 IPHONE_USER="root"
 IPHONE_PORT="22"
 SCHEME="rootless"
+SCHEME_INPUT="rootless"
 SHOW_DAEMON=0
 SHOW_TWEAK=0
 SHOW_ALL=0
@@ -24,7 +25,7 @@ Options:
   --host <ip/hostname>       iPhone host (required)
   --user <username>          SSH user (default: root)
   --port <ssh_port>          SSH port (default: 22)
-  --scheme <rootless|rootful> Used only for helper output (default: rootless)
+  --scheme <roothide|rootless|rootful> Used only for helper output (default: rootless)
 EOF
 }
 
@@ -34,7 +35,11 @@ while [[ $# -gt 0 ]]; do
     --user) IPHONE_USER="${2:-}"; shift 2 ;;
     --port) IPHONE_PORT="${2:-}"; shift 2 ;;
     --scheme)
-      SCHEME="${2:-}"
+      SCHEME_INPUT="${2:-}"
+      SCHEME="${SCHEME_INPUT}"
+      if [[ "${SCHEME}" == "roothide" ]]; then
+        SCHEME="rootless"
+      fi
       [[ "${SCHEME}" == "rootless" || "${SCHEME}" == "rootful" ]] || { echo "Invalid --scheme" >&2; exit 1; }
       shift 2
       ;;
@@ -64,10 +69,10 @@ if [[ "${SHOW_ALL}" -eq 1 ]]; then
 [logs] Use one of these (open 2 terminals if possible):
 
 Daemon logs:
-  ./scripts/logs-iphone.sh --host ${IPHONE_HOST} --daemon --scheme ${SCHEME}
+  ./scripts/logs-iphone.sh --host ${IPHONE_HOST} --daemon --scheme ${SCHEME_INPUT}
 
 Tweak logs:
-  ./scripts/logs-iphone.sh --host ${IPHONE_HOST} --tweak --scheme ${SCHEME}
+  ./scripts/logs-iphone.sh --host ${IPHONE_HOST} --tweak --scheme ${SCHEME_INPUT}
 
 Quick health check:
   ssh -p ${IPHONE_PORT} ${SSH_TARGET} "launchctl print system/com.project.lumina.proxyd | head -n 20"
