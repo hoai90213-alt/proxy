@@ -1,11 +1,15 @@
 # Theos Tweak (UDP Redirect)
 
-This tweak redirects Minecraft Bedrock UDP traffic (default ports `19132/19133`) to the local `proxyd` daemon on loopback.
+This tweak redirects Minecraft Bedrock UDP traffic (default ports `19132/19133`) to the local `proxyd`/`proxyd-c` daemon on loopback.
 
 It currently hooks:
 
 - `connect` (UDP sockets)
 - `sendto` (UDP datagrams)
+
+Current limitation for `proxyd-c`:
+
+- Redirect is effectively IPv4-focused right now (IPv6 redirect paths are disabled until `proxyd-c` gets IPv6 local bind support)
 
 The redirect target is read from the proxyd JSON config:
 

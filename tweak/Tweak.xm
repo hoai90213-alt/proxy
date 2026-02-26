@@ -167,7 +167,7 @@ static BOOL LPShouldRedirectAddress(const struct sockaddr *addr, socklen_t addrl
             if (addrlen < sizeof(struct sockaddr_in6)) return NO;
             const struct sockaddr_in6 *a = (const struct sockaddr_in6 *)addr;
             if (LPIsIPv6Loopback(a)) return NO;
-            return LPPortInRewriteList(ntohs(a->sin6_port));
+            return NO; // proxyd-c currently binds IPv4 loopback only
         }
         default:
             return NO;
@@ -193,14 +193,7 @@ static BOOL LPBuildLoopbackRedirect(const struct sockaddr *originalAddr,
             return YES;
         }
         case AF_INET6: {
-            if (originalLen < sizeof(struct sockaddr_in6)) return NO;
-            struct sockaddr_in6 *dst = (struct sockaddr_in6 *)outStorage;
-            dst->sin6_family = AF_INET6;
-            dst->sin6_len = sizeof(struct sockaddr_in6);
-            dst->sin6_port = gHookConfig.localProxyPort;
-            dst->sin6_addr = in6addr_loopback;
-            *outLen = sizeof(struct sockaddr_in6);
-            return YES;
+            return NO; // proxyd-c currently binds IPv4 loopback only
         }
         default:
             return NO;

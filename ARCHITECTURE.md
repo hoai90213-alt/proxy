@@ -4,7 +4,7 @@
 
 - `Minecraft process` (target app)
 - `Injected tweak` (Theos/Logos) for traffic redirection and optional overlay
-- `proxyd` (launchd daemon) for relay logic + control API
+- `proxyd` or `proxyd-c` (launchd daemon) for relay logic + control API
 - `Web backend/dashboard` for remote start/stop commands
 
 ## Recommended Flow
@@ -14,6 +14,8 @@
 3. `proxyd` updates local proxy runtime state
 4. Tweak redirects Minecraft traffic to `127.0.0.1:<localProxyPort>`
 5. `proxyd` forwards packets to configured remote Bedrock server
+
+For no-Mac workflows, replace `proxyd` with `proxyd-c` (C/BSD sockets implementation).
 
 ## Local Control API (current scaffold)
 
@@ -41,4 +43,3 @@ Start body (optional JSON):
 - Do not expose the local control API publicly without authentication
 - Add signed command verification before trusting web/backend commands
 - Add replay protection (`nonce`, `timestamp`, short expiration)
-
