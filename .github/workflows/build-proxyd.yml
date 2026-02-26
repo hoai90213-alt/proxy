@@ -1,0 +1,49 @@
+name: Build proxyd
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+    paths:
+      - "proxyd/**"
+      - ".github/workflows/build-proxyd.yml"
+  pull_request:
+    paths:
+      - "proxyd/**"
+      - ".github/workflows/build-proxyd.yml"
+
+jobs:
+  build-macos:
+    runs-on: macos-14
+    defaults:
+      run:
+        shell: bash
+        working-directory: proxyd
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build release
+        run: swift build -c release
+
+      - name: Prepare artifact bundle
+        run: |
+          mkdir -p dist
+          cp .build/release/LuminaProxyDaemon dist/
+          cp example-config.json dist/
+          cp ../launchd/com.project.lumina.proxyd.plist dist/
+          cp -R ../shared dist/shared
+          cp -R ../web dist/web
+          tar -czf LuminaProxyDaemon-macos.tar.gz -C dist .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LuminaProxyDaemon-macos
+          path: proxyd/LuminaProxyDaemon-macos.tar.gz
+          if-no-files-found: error
+

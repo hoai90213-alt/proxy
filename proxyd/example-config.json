@@ -1,0 +1,14 @@
+{
+  "deviceId": "replace-with-your-device-id",
+  "controlBindHost": "127.0.0.1",
+  "controlPort": 8787,
+  "controlAuthToken": "replace-with-strong-token",
+  "localProxyPort": 19132,
+  "remoteDefaultHost": "play.example.net",
+  "remoteDefaultPort": 19132,
+  "remoteCommandURL": "https://your-backend.example/api/devices/replace-with-your-device-id/commands/next",
+  "remoteCommandBearerToken": "replace-with-device-service-token",
+  "commandPollIntervalSeconds": 2,
+  "commandMaxSkewSeconds": 30
+}
+
