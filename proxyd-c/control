@@ -1,0 +1,9 @@
+Package: com.project.lumina.proxyd
+Name: Lumina Proxy Daemon
+Version: 0.1.0
+Architecture: iphoneos-arm
+Description: Local UDP proxy daemon for Lumina jailbreak testing
+Maintainer: hoai90213-alt
+Author: hoai90213-alt
+Section: Utilities
+Depends: firmware (>= 15.0)

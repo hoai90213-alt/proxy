@@ -3,4 +3,7 @@
 Packages/
 *.swp
 *.log
-
+.theos/
+packages/
+*.deb
+luminaproxyd

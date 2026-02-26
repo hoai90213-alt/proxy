@@ -1,0 +1,9 @@
+Package: com.project.lumina.proxytweak
+Name: Lumina Proxy Tweak
+Version: 0.1.0
+Architecture: iphoneos-arm
+Description: UDP redirect hooks for Minecraft Bedrock -> local Lumina proxy
+Maintainer: hoai90213-alt
+Author: hoai90213-alt
+Section: Tweaks
+Depends: mobilesubstrate, firmware (>= 15.0)
