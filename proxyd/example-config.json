@@ -3,6 +3,8 @@
   "controlBindHost": "127.0.0.1",
   "controlPort": 8787,
   "controlAuthToken": "replace-with-strong-token",
+  "tweakEnabled": true,
+  "rewritePorts": [19132, 19133],
   "localProxyPort": 19132,
   "remoteDefaultHost": "play.example.net",
   "remoteDefaultPort": 19132,
@@ -11,4 +13,3 @@
   "commandPollIntervalSeconds": 2,
   "commandMaxSkewSeconds": 30
 }
-
