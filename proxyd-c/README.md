@@ -27,6 +27,12 @@ make
 ./luminaproxyd ./example-config.json
 ```
 
+Or from repo root using helper script:
+
+```bash
+./scripts/build-all.sh
+```
+
 ## Build (Theos / iPhone)
 
 ```bash
@@ -36,3 +42,17 @@ make package
 
 If using rootless packaging, export `THEOS_PACKAGE_SCHEME=rootless` before building.
 
+Or use helper script from repo root:
+
+```bash
+./scripts/build-all.sh --theos --scheme rootless
+```
+
+## Deploy / Logs (WSL -> iPhone)
+
+Use helper scripts from repo root:
+
+```bash
+./scripts/deploy-iphone.sh --host <iphone_ip> --scheme rootless
+./scripts/logs-iphone.sh --host <iphone_ip> --all --scheme rootless
+```

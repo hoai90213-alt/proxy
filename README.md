@@ -9,6 +9,7 @@ It does not port the Android app directly. Instead, it provides a clean scaffold
 - `tweak`: a Theos tweak project (UDP redirect hooks implemented; overlay future work)
 - `launchd`: a sample launch daemon plist
 - `web`: API contract notes for a web dashboard to toggle proxy remotely
+- `scripts`: WSL build/deploy/log helpers for no-Mac workflow
 
 ## What Is Implemented
 
@@ -45,9 +46,10 @@ Additional implementation (no-Mac path):
 No-Mac workflow (recommended for Windows + WSL users):
 
 1. Use `proxyd-c` instead of `proxyd`
-2. Build `proxyd-c` with WSL/Theos (`ios/external-proxy/proxyd-c/Makefile`)
-3. Build `tweak` with Theos (`ios/external-proxy/tweak/Makefile`)
-4. Test on iPhone jailbreak
+2. Run `ios/external-proxy/scripts/wsl-setup.sh` (install build tools / optional Theos)
+3. Build packages with `ios/external-proxy/scripts/build-all.sh --theos --scheme rootless`
+4. Deploy to iPhone with `ios/external-proxy/scripts/deploy-iphone.sh`
+5. Tail logs with `ios/external-proxy/scripts/logs-iphone.sh`
 
 ## Build Note
 
@@ -57,3 +59,18 @@ This repository now includes two daemon paths:
 - `proxyd-c` (C) -> best for Windows + WSL + Theos users
 
 The current Windows workspace still does not have `gcc/clang/make`, so local builds were not run here.
+
+## Task Split (PC vs iPhone)
+
+PC / WSL side (you can do from Windows + Ubuntu):
+
+- Build `proxyd-c` and Theos packages
+- Upload/install packages and config via SSH
+- Tail daemon/tweak logs via SSH
+
+iPhone side (manual actions you need to do):
+
+- Ensure jailbreak + SSH access works (`root@iphone`)
+- Run `sbreload` if prompted/fallback reboot/respring
+- Open Minecraft and join a Bedrock server to generate logs
+- Send back tweak + daemon logs if connection fails

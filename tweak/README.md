@@ -31,6 +31,15 @@ This folder still serves as the place for future jailbreak tweaks such as:
 
 - `Tweak.xm` contains UDP redirect hooks (`connect` + `sendto`)
 - `Makefile` is a minimal Theos skeleton
+- Build/deploy helpers are available in `../scripts/`
+
+Quick no-Mac flow (from `ios/external-proxy` in WSL):
+
+```bash
+./scripts/build-all.sh --theos --scheme rootless
+./scripts/deploy-iphone.sh --host <iphone_ip> --scheme rootless
+./scripts/logs-iphone.sh --host <iphone_ip> --tweak --scheme rootless
+```
 
 ## Suggested Implementation Order
 
